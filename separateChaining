@@ -1,0 +1,322 @@
+class DoublyLinkedList {
+  constructor(){
+    this.head = null;
+    this.tail = null;
+    this.size = 0;
+  }
+
+
+  addToFront(value){
+    const newNode = new Node(value)
+    if(this.head === null){
+      this.head = newNode;
+      this.tail = newNode;
+      this.size++
+      return;
+    }
+    newNode.next = this.head;
+    this.head.prev = newNode;
+    this.head = newNode
+
+    this.size++
+  }
+
+
+  addToTail(value){
+    const newNode = new Node(value)
+    if(this.head === null){
+      this.head = newNode;
+      this.tail = newNode;
+      this.size++
+      return;
+    }
+    newNode.prev = this.tail
+    this.tail.next = newNode
+    this.tail = newNode;
+
+    this.size++
+  }
+
+  getListOfData(){
+    const result = []
+    let node = this.head
+    while(node){
+      result.push(node.data)
+      node = node.next
+    }
+    return result
+  }
+
+  clearList(){
+    let node = this.head;
+    while(node){
+      const nextNode = node.next;
+      node.next = null
+      node.prev = null;
+      node.data = null
+      node = nextNode
+    }
+    this.size = 0;
+  }
+
+  size(){
+    return size()
+  }
+
+  add(value){
+    this.addToTail(value)
+  }
+
+  isEmpty(){
+    return this.size === 0
+  }
+
+  peekFirst(){
+    if(this.isEmpty()) {
+      return "List is Empty"
+    }
+    return this.head.data;
+  }
+
+peekLast(){
+  if(this.isEmpty()) return "List is Empty" 
+  return this.tail.data;
+}
+
+
+removeFirst(){
+  if(this.isEmpty()){
+    return "List is Empty"
+  }
+  this.size--
+  const data = this.head.data;
+  this.head = this.head.next
+  if(this.head){
+  this.head.prev = null
+  }
+  if(this.isEmpty()){
+    this.tail = null;
+  }
+  return data
+}
+
+
+removeLast(){
+  if(this.isEmpty()){
+    return "List is Empty"
+  }
+  this.size--
+  const data = this.tail.data;
+  this.tail = this.tail.prev;
+  if(this.tail){
+  this.tail.next = null;
+  }
+  if(this.isEmpty()){
+    this.head = null;
+  }
+  return data;
+}
+
+
+removeNode(node){
+  if(node.prev === null) return this.removeFirst();
+  if(node.next === null) return this.removeLast();
+
+  this.size--
+  node.prev.next = node.next
+  node.next.prev = node.prev
+  node.next = null
+  node.prev = null
+  const data = node.data;
+  node.data = null
+  return data
+}
+
+removeAtIndex(index){
+  if(index < 0 || index>= this.size) return "Out of bound"
+  let node = this.head;
+  let counter = 0;
+  while(counter != index){
+    node = node.next
+    counter++
+  }
+  return this.removeNode(node)
+}
+
+
+removeValue(value){
+  let node = this.head;
+  while(node){
+    if(node.data === value){
+      return this.removeNode(node)
+    }
+    node = node.next;
+  }
+  return "Value does not exists"
+}
+
+getEntryByKey(key){
+  let node = this.head
+  while(node){
+    if(node.data.key === key){
+      return node.data
+    }
+    node = node.next
+  }
+  return false
+}
+
+};
+
+
+class Node {
+  constructor(value){
+    this.data = value;
+    this.next = null
+    this.prev = null
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Entry {
+  constructor(key,value){
+    this.key = key;
+    this.value = value
+    this.hash = this.createHashCode(key);
+  }
+
+  createHashCode(key){
+var alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+  let sum = 0
+  for(let letter of key){
+      sum+=alphabet.indexOf(letter.toLowerCase())+1;
+  }
+  return sum % 3;
+  }
+}
+
+
+class HashTableSeperateChaining {
+
+  constructor(){
+    this.table = []
+    this.capacity = 3;
+    this.maxLoadFactor = 0.75
+    this.threshold = 0
+    this.size = 0
+  }
+
+    createHashCode(key){
+var alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+  let sum = 0
+  for(let letter of key){
+      sum+=alphabet.indexOf(letter.toLowerCase())+1;
+  }
+  return sum % this.capacity;
+  }
+
+  add(key,value){
+    if(!key) return null
+    let hashCode = this.createHashCode(key)
+    let entry = this.getEntry(key)
+    if(entry){
+      entry.value = value
+    }else {
+      if(!this.table[hashCode]){
+          this.table[hashCode] = new DoublyLinkedList()
+      }
+      const link = this.table[hashCode]
+      link.addToTail(new Entry(key,value))
+    }
+    this.size++
+    return true
+  }
+
+  remove(key){
+    if(!key) return false
+    const hashCode = this.createHashCode(key)
+    const entry = this.getEntry(key)
+    if(!entry) return false
+    const link = this.table[hashCode]
+    link.removeValue(entry)
+    this.size--
+    return entry
+  }
+
+  getEntry(key){
+    if(!key) return false
+    let hashCode = this.createHashCode(key)
+    if(!this.table[hashCode]) return false
+    let link = this.table[hashCode]
+    const entry = link.getEntryByKey(key)
+    return entry
+  }
+
+
+}
+
+
+
+
+
+const newHash = new HashTableSeperateChaining()
+newHash.add("A", "This is value")
+newHash.add("B", "This is value")
+newHash.add("D", "is value")
+newHash.add("C", "is valuxe")
+newHash.add("E", "This is value")
+newHash.add("F", "This is value")
+newHash.add("G", "is value")
+newHash.add("H", "is valuxe")
+
+console.log(newHash.getEntry("A"))
+
+console.log(newHash)
+
+
+
+
+
+
+
+
+
+
+
